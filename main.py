@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import os
 import time
 import asyncio
+import pytz
 
 keep_alive()
 
@@ -23,6 +24,7 @@ ADMIN_USERS = set(map(int, os.getenv("ADMIN_USERS", "").split())) if os.getenv("
 
 # Set intents for the bot to read messages, view members, and server info
 intents = discord.Intents.default()
+intents.message_content = True
 intents.messages = True
 intents.guilds = True
 intents.members = True
@@ -299,25 +301,6 @@ async def help(ctx: discord.Interaction):
     embed.add_field(name="/log <ช่อง>", value="ตั้งค่าช่องสำหรับแจ้งเตือนการบันทึก (เจ้าของเท่านั้น)", inline=False)
 
     await ctx.response.send_message(embed=embed, ephemeral=True)
-
-@bot.tree.command(name="help2", description="แล้วแต่ว่าชอบแบบไหน")
-async def help(ctx: discord.Interaction):
-    """ Command to show all available bot commands """
-    embed = discord.Embed(
-        title="คำสั่งบอท",
-        description="นี้คือคำสั่งทั้งหมดของบอท",
-        color=discord.Color.blue()
-    )
-
-    embed.add_field(name="/clear <จำนวน>", value="ลบข้อความตามจำนวนที่เลือก (ผู้ดูแลเท่านั้น)", inline=True)
-    embed.add_field(name="/clear_all", value="ลบข้อความทั้งหมดในช่อง (ผู้ดูแลเท่านั้น)", inline=True)
-    embed.add_field(name="/clear_user <ผู้ใช้>", value="ลบข้อความทั้งหมดจากผู้ใช้ (ผู้ดูแลเท่านั้น)", inline=True)
-    embed.add_field(name="/add_admin <ผู้ใช้>", value="เพิ่มบทบาทผู้ดูแล (เจ้าของเท่านั้น)", inline=False)
-    embed.add_field(name="/remove_admin <ผู้ใช้>", value="ลบบทบาทผู้ดูแล (เจ้าของเท่านั้น)", inline=False)
-    embed.add_field(name="/admin_list", value="แสดงรายชื่อผู้ดูแลทั้งหมด", inline=False)
-    embed.add_field(name="/log <ช่อง>", value="ตั้งค่าช่องสำหรับแจ้งเตือนการบันทึก (เจ้าของเท่านั้น)", inline=False)
-
-    await ctx.response.send_message(embed=embed, ephemeral=False)
 
 # 🎯 ฟังก์ชันส่ง Embed  
 async def send_donation_embed(channel):
