@@ -319,7 +319,7 @@ async def send_donation_embed(channel):
     embed.add_field(name="ส่งหลักฐานได้ที่นี่", value="[Click](https://discord.com/channels/1359152679284375752/1359202427638906960)", inline=True)
     embed.add_field(name="หรือไม่ก็คลิกที่นี่", value="<#1359202427638906960>", inline=True)
     embed.set_footer(
-    text="Kaida | Made by null",
+    text="Kaida | Made by wasd",
     icon_url="https://cdn.discordapp.com/attachments/1038838432434229328/1362069141296779394/Kaida_logo.png?ex=680af07d&is=68099efd&hm=b2de5054d0d3ebb185ef2a3ebf5b5c9b8ca5a49af06c116511244eee0961e64d&"
 )
 
@@ -415,14 +415,14 @@ async def dm(interaction: discord.Interaction, user: discord.User, message: str)
     allowed_users = [996447615812112546, 1144141941588627578]  # แทนด้วย Discord User ID ของคุณ
 
     if interaction.user.id not in allowed_users:
-        return await interaction.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้", ephemeral=True)
+        await interaction.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้", ephemeral=True)
+        return
 
     try:
         await user.send(f"📩 ข้อความจาก {interaction.user.display_name}: {message}")
+        await interaction.response.send_message(f"✅ ส่งข้อความหา {user.name} เรียบร้อยแล้ว", ephemeral=True)
     except Exception as e:
-        return await interaction.response.send_message(f"❌ ส่งไม่ได้: {e}", ephemeral=True)
-    
-    await interaction.response.send_message(f"✅ ส่งข้อความหา {user.name} เรียบร้อยแล้ว", ephemeral=True)
+        await interaction.response.send_message(f"❌ ส่งไม่ได้: {e}", ephemeral=True)
 
 
 @bot.tree.command(name="announce", description="ส่งประกาศไปยังช่องที่กำหนด")
