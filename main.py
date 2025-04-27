@@ -345,6 +345,29 @@ async def schedule_midnight_message():
         if channel:
             await send_donation_embed(channel)
 
+@bot.tree.command(name="check", description="เช็คเวลาที่เหลือก่อนส่งออโต้ (Dev Only)")
+async def check_time(interaction: discord.Interaction):
+    allowed_users = [996447615812112546]  # ใส่ user_id ที่อนุญาตตรงนี้ (เป็น list)
+
+    if interaction.user.id not in allowed_users:
+        await interaction.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้", ephemeral=True)
+        return
+
+    tz = pytz.timezone('Asia/Bangkok')
+    now = datetime.now(tz)
+    tomorrow = now + timedelta(days=1)
+    midnight = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz)
+    wait_time = (midnight - now).total_seconds()
+
+    hours, remainder = divmod(wait_time, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    await interaction.response.send_message(
+        f"⏳ เหลืออีก {int(hours)} ชั่วโมง {int(minutes)} นาที {int(seconds)} วินาที จะส่งข้อความอัตโนมัติครับ!",
+        ephemeral=True
+    )
+
+
 # 🧪 Slash Command /an สำหรับทดสอบ (ใช้ได้เฉพาะผู้ใช้ที่มี user_id = 996447615812112546)
 @bot.tree.command(name="an", description="ส่งข้อความทันที")
 async def send_now(interaction: discord.Interaction):
@@ -430,5 +453,8 @@ async def on_ready():
         print(f"❌ Failed to sync commands: {e}")
 
     print(f"✅ Logged in as {bot.user}")
+
+    bot.loop.create_task(schedule_midnight_message())
+
 
 bot.run(TOKEN)
