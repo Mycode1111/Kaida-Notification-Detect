@@ -454,5 +454,7 @@ async def on_ready():
 
     print(f"✅ Logged in as {bot.user}")
 
-bot.loop.create_task(schedule_midnight_message())
+    bot.loop.create_task(schedule_midnight_message())
+
+
 bot.run(TOKEN)
