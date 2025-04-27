@@ -409,20 +409,20 @@ async def send_now(interaction: discord.Interaction):
     await interaction.followup.send("เลือกช่องที่ต้องการส่งข้อความ:", view=view, ephemeral=True)
 
 
-@bot.tree.command(name="dm", description="ส่งข้อความ DM")
+@bot.tree.command(name="dm", description="ส่งข้อความ DM หาใครสักคน")
 @app_commands.describe(user="ผู้รับ", message="ข้อความที่ต้องการส่ง")
 async def dm(interaction: discord.Interaction, user: discord.User, message: str):
     allowed_users = [996447615812112546, 1144141941588627578]  # แทนด้วย Discord User ID ของคุณ
 
     if interaction.user.id not in allowed_users:
-        await interaction.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้", ephemeral=True)
-        return
+        return await interaction.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้", ephemeral=True)
 
     try:
         await user.send(f"📩 ข้อความจาก {interaction.user.display_name}: {message}")
-        await interaction.response.send_message(f"✅ ส่งข้อความหา {user.name} เรียบร้อยแล้ว", ephemeral=True)
     except Exception as e:
-        await interaction.response.send_message(f"❌ ส่งไม่ได้: {e}", ephemeral=True)
+        return await interaction.response.send_message(f"❌ ส่งไม่ได้: {e}", ephemeral=True)
+    
+    await interaction.response.send_message(f"✅ ส่งข้อความหา {user.name} เรียบร้อยแล้ว", ephemeral=True)
 
 
 @bot.tree.command(name="announce", description="ส่งประกาศไปยังช่องที่กำหนด")
