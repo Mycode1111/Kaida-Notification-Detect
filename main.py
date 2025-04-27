@@ -423,6 +423,12 @@ async def on_ready():
     activity = discord.Streaming(name="Kaida AntiSpam ready!💚", url="https://www.youtube.com/watch?v=bH3vMDK_Hn0")
     await bot.change_presence(status=discord.Status.idle, activity=activity)  # เปลี่ยนสถานะเป็น Online
 
+    try:
+        synced = await bot.tree.sync()  # ซิงค์ Slash Commands
+        print(f"🔃 Synced {len(synced)} commands!")
+    except Exception as e:
+        print(f"❌ Failed to sync commands: {e}")
+
     print(f"✅ Logged in as {bot.user}")
 
 bot.run(TOKEN)
