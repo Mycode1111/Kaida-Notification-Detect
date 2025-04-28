@@ -313,13 +313,13 @@ async def send_donation_embed(channel):
         timestamp=discord.utils.utcnow()
     )
     embed.set_author(
-        name="Kaida", 
+        name="ระบบแจ้งเตือนอัตโนมัติ", 
         icon_url="https://cdn.discordapp.com/attachments/1038838432434229328/1362069141296779394/Kaida_logo.png?ex=680af07d&is=68099efd&hm=b2de5054d0d3ebb185ef2a3ebf5b5c9b8ca5a49af06c116511244eee0961e64d&"
     )
     embed.add_field(name="ส่งหลักฐานได้ที่นี่", value="[Click](https://discord.com/channels/1359152679284375752/1359202427638906960)", inline=True)
     embed.add_field(name="หรือไม่ก็คลิกที่นี่", value="<#1359202427638906960>", inline=True)
     embed.set_footer(
-    text="Kaida | Made by wasd",
+    text="Kaida | Made by null",
     icon_url="https://cdn.discordapp.com/attachments/1038838432434229328/1362069141296779394/Kaida_logo.png?ex=680af07d&is=68099efd&hm=b2de5054d0d3ebb185ef2a3ebf5b5c9b8ca5a49af06c116511244eee0961e64d&"
 )
 
