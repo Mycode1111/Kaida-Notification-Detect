@@ -437,7 +437,7 @@ async def dm(interaction: discord.Interaction, user: discord.User, message: str)
     except Exception as e:
         # ถ้ามีข้อผิดพลาด ให้ตรวจสอบการตอบกลับ interaction ก่อน
         if not interaction.response.is_done():
-            await interaction.response.send_message(f"❌ ส่งไม่ได้: {e}", ephemeral=True)ใ
+            await interaction.response.send_message(f"❌ ส่งไม่ได้: {e}", ephemeral=True)
 
 @bot.tree.command(name="announce", description="ส่งประกาศไปยังช่องที่กำหนด")
 @app_commands.describe(channel="ช่องที่ต้องการประกาศ", message="ข้อความที่ต้องการประกาศ")
