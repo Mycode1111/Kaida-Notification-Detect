@@ -329,12 +329,13 @@ async def schedule_midnight_message():
         tomorrow = now + timedelta(days=1)
 
         # กำหนดเวลา 23:42 ของวันถัดไป
-        target_time = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz) + timedelta(hours=23, minutes=42)
-        
+        target_time = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz) + timedelta(hours=1, minutes=28)
+
         # คำนวณเวลาที่ต้องรอจนถึงเวลา 23:42
         wait_time = (target_time - now).total_seconds()
 
         print(f"⏳ Waiting {wait_time:.2f} seconds until 23:42 Thailand time...")
+
         await asyncio.sleep(wait_time)
 
         if channel:
