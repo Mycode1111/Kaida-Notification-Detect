@@ -327,13 +327,17 @@ async def schedule_custom_message():
         now = datetime.now(tz)
         tomorrow = now + timedelta(days=1)
 
-        # กำหนดเวลา 08:30 ของวันถัดไป
-        target_time = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz) + timedelta(hours=1, minutes=2)
+        # กำหนดเวลา 08:02 ของวันถัดไป
+        target_time = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz) + timedelta(hours=1, minutes=8)
 
-        # คำนวณเวลาที่ต้องรอจนถึงเวลา 08:30
+        # คำนวณเวลาที่ต้องรอจนถึงเวลา 08:02
         wait_time = (target_time - now).total_seconds()
 
-        print(f"⏳ Waiting {wait_time:.2f} seconds until 08:30 Thailand time...")
+        # ถ้าเวลาที่คำนวณได้เป็นลบ (ถ้าบอทรันเกินเวลาที่กำหนดไปแล้ว)
+        if wait_time < 0:
+            wait_time += 86400  # ถ้า wait_time เป็นลบ ให้เพิ่ม 24 ชั่วโมง (86400 วินาที)
+
+        print(f"⏳ Waiting {wait_time:.2f} seconds until 08:02 Thailand time...")
         await asyncio.sleep(wait_time)
 
         if channel:
