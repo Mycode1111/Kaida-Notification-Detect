@@ -359,8 +359,12 @@ async def check_time(interaction: discord.Interaction):
     tz = pytz.timezone('Asia/Bangkok')
     now = datetime.now(tz)
     tomorrow = now + timedelta(days=1)
-    midnight = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz)
-    wait_time = (midnight - now).total_seconds()
+
+    # กำหนดเวลา 23:42 ของวันถัดไป
+    target_time = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz) + timedelta(hours=23, minutes=42)
+
+    # คำนวณเวลาที่ต้องรอจนถึง 23:42
+    wait_time = (target_time - now).total_seconds()
 
     hours, remainder = divmod(wait_time, 3600)
     minutes, seconds = divmod(remainder, 60)
@@ -369,7 +373,6 @@ async def check_time(interaction: discord.Interaction):
         f"⏳ เหลืออีก {int(hours)} ชั่วโมง {int(minutes)} นาที {int(seconds)} วินาที จะส่งข้อความอัตโนมัติครับ!",
         ephemeral=True
     )
-
 
 # 🧪 Slash Command /an สำหรับทดสอบ (ใช้ได้เฉพาะผู้ใช้ที่มี user_id = 996447615812112546)
 @bot.tree.command(name="an", description="ส่งข้อความทันที")
