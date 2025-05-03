@@ -328,7 +328,7 @@ async def schedule_custom_message():
         tomorrow = now + timedelta(days=1)
 
         # กำหนดเวลา 08:02 ของวันถัดไป
-        target_time = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz) + timedelta(hours=1, minutes=8)
+        target_time = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz) + timedelta(hours=1, minutes=12)
 
         # คำนวณเวลาที่ต้องรอจนถึงเวลา 08:02
         wait_time = (target_time - now).total_seconds()
@@ -455,7 +455,6 @@ async def on_ready():
         print(f"❌ Failed to sync commands: {e}")
 
     print(f"✅ Logged in as {bot.user}")
-    
     bot.loop.create_task(schedule_midnight_message())
 
 bot.run(TOKEN)
