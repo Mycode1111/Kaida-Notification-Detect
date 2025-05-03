@@ -429,7 +429,7 @@ async def dm(interaction: discord.Interaction, user: discord.User, message: str)
         # ส่งข้อความ DM
         await user.send(f"# 📩 ข้อความจาก {interaction.user.display_name}\n > **{message}**")
         
-        # ถ้ายังไม่ได้ตอบกลับ interaction ก่อนหน้า, ส่งข้อความตอบกลับ
+        # ตอบกลับการ interaction ถ้ายังไม่ได้ตอบ
         if not interaction.response.is_done():
             await interaction.response.send_message(f"✅ ส่งข้อความหา {user.name} เรียบร้อยแล้ว", ephemeral=True)
 
