@@ -425,19 +425,13 @@ async def dm(interaction: discord.Interaction, user: discord.User, message: str)
         return
 
     try:
-        # ตรวจสอบว่า interaction ได้รับการตอบกลับไปแล้วหรือยัง
-        if not interaction.response.is_done():
-            await interaction.response.defer()  # ใช้ defer หากยังไม่ได้ตอบกลับ
-
         # ส่งข้อความ DM
         await user.send(f"# 📩 ข้อความจาก {interaction.user.display_name}\n > **{message}**")
 
-        # ตอบกลับการโต้ตอบ
+        # ตอบกลับการโต้ตอบด้วย followup
         await interaction.followup.send(f"✅ ส่งข้อความหา {user.name} เรียบร้อยแล้ว", ephemeral=True)
     except Exception as e:
         # ถ้ามีข้อผิดพลาด ให้ใช้ followup แทน
-        if not interaction.response.is_done():
-            await interaction.response.defer()  # ใช้ defer ถ้าไม่เคยตอบกลับมาก่อน
         await interaction.followup.send(f"❌ ส่งไม่ได้: {e}", ephemeral=True)
 
 @bot.tree.command(name="announce", description="ส่งประกาศไปยังช่องที่กำหนด")
