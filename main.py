@@ -325,7 +325,7 @@ async def send_donation_embed(channel):
 
     await channel.send(content="<@&1359180452698525749>", embed=embed)
 
-# ⏰ ส่งเวลาเที่ยงคืน (ตามเวลาไทย)
+# ⏰ ส่งเวลา 23:42 (ตามเวลาไทย)
 async def schedule_midnight_message():
     await bot.wait_until_ready()
     channel = bot.get_channel(CHANNEL_ID)
@@ -335,10 +335,14 @@ async def schedule_midnight_message():
         tz = pytz.timezone('Asia/Bangkok')
         now = datetime.now(tz)
         tomorrow = now + timedelta(days=1)
-        midnight = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz)
-        wait_time = (midnight - now).total_seconds()
 
-        print(f"⏳ Waiting {wait_time:.2f} seconds until 00:00 Thailand time...")
+        # กำหนดเวลา 23:42 ของวันถัดไป
+        target_time = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz) + timedelta(hours=23, minutes=42)
+        
+        # คำนวณเวลาที่ต้องรอจนถึงเวลา 23:42
+        wait_time = (target_time - now).total_seconds()
+
+        print(f"⏳ Waiting {wait_time:.2f} seconds until 23:42 Thailand time...")
         await asyncio.sleep(wait_time)
 
         if channel:
