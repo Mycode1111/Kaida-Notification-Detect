@@ -431,6 +431,7 @@ async def dm(interaction: discord.Interaction, user: discord.User, message: str)
     except Exception as e:
         await interaction.response.send_message(f"❌ ส่งไม่ได้: {e}", ephemeral=True)
 
+
 @bot.tree.command(name="announce", description="ส่งประกาศไปยังช่องที่กำหนด")
 @app_commands.describe(channel="ช่องที่ต้องการประกาศ", message="ข้อความที่ต้องการประกาศ")
 async def announce(interaction: discord.Interaction, channel: discord.TextChannel, message: str):
@@ -459,6 +460,7 @@ async def on_ready():
         print(f"❌ Failed to sync commands: {e}")
 
     print(f"✅ Logged in as {bot.user}")
+    
     bot.loop.create_task(schedule_midnight_message())
 
 bot.run(TOKEN)
