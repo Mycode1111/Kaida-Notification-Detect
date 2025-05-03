@@ -454,6 +454,7 @@ async def on_ready():
     await bot.change_presence(status=discord.Status.idle, activity=activity)  # เปลี่ยนสถานะเป็น Online
 
     try:
+        bot.tree.clear_commands()
         synced = await bot.tree.sync()  # ซิงค์ Slash Commands
         print(f"🔃 Synced {len(synced)} commands!")
     except Exception as e:
