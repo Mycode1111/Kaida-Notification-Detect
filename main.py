@@ -142,38 +142,27 @@ async def on_message(message):
 
 @bot.tree.command(name="clear", description="ลบข้อความตามจำนวนที่เลือก")
 async def clear(ctx: discord.Interaction, amount: int):
-        """ Command to delete a specified number of messages """
-        if ctx.user.id not in ADMIN_USERS:
-            await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
-            return
-
-        if amount <= 0 or amount > 100:
-            await ctx.response.send_message("❌ ใส่ได้แค่เลข 1 ถึง 100 เท่านั้น!", ephemeral=True)
-            return
-
-        # แจ้งว่าเราจะทำการลบข้อความ และป้องกันการหมดเวลา
-        await ctx.response.defer(ephemeral=True)
-
-        try:
-            deleted_messages = await ctx.channel.purge(limit=amount)
-            await ctx.followup.send(f"✅ ลบข้อความแล้ว {len(deleted_messages)} ข้อความ", ephemeral=True)
-        except Exception as e:
-            await ctx.followup.send(f"❌ An error occurred: {str(e)}", ephemeral=True)
-
-@bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง")
-async def clear_all(interaction: discord.Interaction):
-    if interaction.user.id not in ADMIN_USERS:
-        await interaction.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
+    """ Command to delete a specified number of messages """
+    if ctx.user.id not in ADMIN_USERS:
+        await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
         return
 
-    await interaction.response.defer(ephemeral=True)  # ป้องกัน timeout
+    if amount <= 0 or amount > 100:
+        await ctx.response.send_message("❌ ใส่ได้แค่เลข 1 ถึง 100 เท่านั้น!", ephemeral=True)
+        return
+    
+    deleted_messages = await ctx.channel.purge(limit=amount)
+    await ctx.response.send_message(f"✅ ลบข้อความแล้ว {len(deleted_messages)} ข้อความ", ephemeral=True)
 
-    channel = interaction.channel
-    if isinstance(channel, discord.TextChannel):
-        deleted = await channel.purge()
-        await interaction.followup.send(f"✅ ลบข้อความแล้ว {len(deleted)} ข้อความ")
-    else:
-        await interaction.followup.send("❌ คำสั่งนี้ใช้ได้เฉพาะช่องข้อความเท่านั้น.")
+@bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง")
+async def clear_all(ctx: discord.Interaction):
+    """ Command to delete all messages in the chat """
+    if ctx.user.id not in ADMIN_USERS:
+        await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
+        return
+    
+    deleted_messages = await ctx.channel.purge()
+    await ctx.response.send_message(f"✅ ลบข้อความแล้ว {len(deleted_messages)} ข้อความ", ephemeral=True)
 
 @bot.tree.command(name="clear_user", description="ลบข้อความทั้งหมดจากผู้ใช้")
 async def clear_user(ctx: discord.Interaction, member: discord.Member):
