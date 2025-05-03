@@ -336,11 +336,11 @@ async def schedule_midnight_message():
         now = datetime.now(tz)
         
         # คำนวณเวลาเที่ยงคืนของวันถัดไป
-        next_midnight = datetime.combine(now.date() + timedelta(days=1), time(0, 0), tzinfo=tz)
+        next_midnight = datetime.combine(now.date() + timedelta(days=1), time(23, 42), tzinfo=tz)
         
         # เวลาที่ต้องรอ
         wait_time = (next_midnight - now).total_seconds()
-        print(f"⏳ Waiting {wait_time:.2f} seconds until 00:00 Thailand time...")
+        print(f"⏳ Waiting {wait_time:.2f} seconds until 23:42 Thailand time...")
 
         try:
             await asyncio.sleep(wait_time)
