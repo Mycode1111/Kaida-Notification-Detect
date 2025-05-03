@@ -10,6 +10,8 @@ import os
 import time
 import asyncio
 import pytz
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 keep_alive()
 
@@ -325,33 +327,18 @@ async def send_donation_embed(channel):
 
     await channel.send(content="<@&1359180452698525749>", embed=embed)
 
-# ⏰ ส่งเวลาเที่ยงคืน (ตามเวลาไทย)
-async def schedule_midnight_message():
-    await bot.wait_until_ready()
-    channel = bot.get_channel(CHANNEL_ID)
-    
-    tz = pytz.timezone('Asia/Bangkok')
+# ✅ เรียกใช้ scheduler ที่แม่นยำ
+def start_scheduler(bot):
+    scheduler = AsyncIOScheduler(timezone='Asia/Bangkok')
 
-    while not bot.is_closed():
-        now = datetime.now(tz)
-        
-        # คำนวณเวลาเที่ยงคืนของวันถัดไป
-        next_midnight = datetime.combine(now.date() + timedelta(days=1), time(23, 42), tzinfo=tz)
-        
-        # เวลาที่ต้องรอ
-        wait_time = (next_midnight - now).total_seconds()
-        print(f"⏳ Waiting {wait_time:.2f} seconds until 23:42 Thailand time...")
-
-        try:
-            await asyncio.sleep(wait_time)
-        except asyncio.CancelledError:
-            break
-
+    @scheduler.scheduled_job(CronTrigger(hour=0, minute=0))
+    async def send_midnight():
+        channel = bot.get_channel(CHANNEL_ID)
         if channel:
             await send_donation_embed(channel)
+            print(f"✅ Embed sent at {datetime.now(pytz.timezone('Asia/Bangkok'))}")
 
-        # รอเพิ่มนิดนึงให้แน่ใจว่าไม่รันซ้ำ (1 วินาที)
-        await asyncio.sleep(1)
+    scheduler.start()
 
 @bot.tree.command(name="check", description="เช็คเวลาที่เหลือก่อนส่งออโต้ (Dev Only)")
 async def check_time(interaction: discord.Interaction):
@@ -462,7 +449,7 @@ async def on_ready():
 
     print(f"✅ Logged in as {bot.user}")
 
-    bot.loop.create_task(schedule_midnight_message())
+    start_scheduler(bot)
 
 
 bot.run(TOKEN)
