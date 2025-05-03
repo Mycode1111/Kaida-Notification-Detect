@@ -335,6 +335,7 @@ async def schedule_midnight_message():
 
         if channel:
             await send_donation_embed(channel)
+
 @bot.tree.command(name="check", description="เช็คเวลาที่เหลือก่อนส่งออโต้ (Dev Only)")
 async def check_time(interaction: discord.Interaction):
     allowed_users = [996447615812112546]  # ใส่ user_id ที่อนุญาตตรงนี้ (เป็น list)
