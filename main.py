@@ -325,25 +325,33 @@ async def send_donation_embed(channel):
 
     await channel.send(content="<@&1359180452698525749>", embed=embed)
 
-
 # ⏰ ส่งเวลาเที่ยงคืน (ตามเวลาไทย)
 async def schedule_midnight_message():
     await bot.wait_until_ready()
     channel = bot.get_channel(CHANNEL_ID)
+    
+    tz = pytz.timezone('Asia/Bangkok')
 
-    while True:
-        # ใช้เวลาในโซนประเทศไทย (Asia/Bangkok)
-        tz = pytz.timezone('Asia/Bangkok')
+    while not bot.is_closed():
         now = datetime.now(tz)
-        tomorrow = now + timedelta(days=1)
-        midnight = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz)
-        wait_time = (midnight - now).total_seconds()
-
+        
+        # คำนวณเวลาเที่ยงคืนของวันถัดไป
+        next_midnight = datetime.combine(now.date() + timedelta(days=1), time(0, 0), tzinfo=tz)
+        
+        # เวลาที่ต้องรอ
+        wait_time = (next_midnight - now).total_seconds()
         print(f"⏳ Waiting {wait_time:.2f} seconds until 00:00 Thailand time...")
-        await asyncio.sleep(wait_time)
+
+        try:
+            await asyncio.sleep(wait_time)
+        except asyncio.CancelledError:
+            break
 
         if channel:
             await send_donation_embed(channel)
+
+        # รอเพิ่มนิดนึงให้แน่ใจว่าไม่รันซ้ำ (1 วินาที)
+        await asyncio.sleep(1)
 
 @bot.tree.command(name="check", description="เช็คเวลาที่เหลือก่อนส่งออโต้ (Dev Only)")
 async def check_time(interaction: discord.Interaction):
