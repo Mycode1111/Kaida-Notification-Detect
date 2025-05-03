@@ -10,7 +10,6 @@ import os
 import time
 import asyncio
 import pytz
-import subprocess
 
 keep_alive()
 
@@ -450,16 +449,5 @@ async def on_ready():
 
     print(f"✅ Logged in as {bot.user}")
     bot.loop.create_task(schedule_midnight_message())
-
-@bot.command()
-async def redeploy(ctx):
-    # ใช้ subprocess ในการเรียกคำสั่ง Git pull
-    try:
-        # ดึงข้อมูลจาก GitHub
-        result = subprocess.run(['git', 'pull'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output = result.stdout.decode('utf-8') + result.stderr.decode('utf-8')
-        await ctx.send(f"Redeploy completed:\n{output}")
-    except Exception as e:
-        await ctx.send(f"Error during redeploy: {e}")
 
 bot.run(TOKEN)
