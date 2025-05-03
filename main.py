@@ -10,8 +10,6 @@ import os
 import time
 import asyncio
 import pytz
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.cron import CronTrigger
 
 keep_alive()
 
@@ -327,18 +325,27 @@ async def send_donation_embed(channel):
 
     await channel.send(content="<@&1359180452698525749>", embed=embed)
 
-# ✅ เรียกใช้ scheduler ที่แม่นยำ
-def start_scheduler(bot):
-    scheduler = AsyncIOScheduler(timezone='Asia/Bangkok')
+# ⏰ ส่งเวลา 23:42 (ตามเวลาไทย)
+async def schedule_night_message():
+    await bot.wait_until_ready()
+    channel = bot.get_channel(CHANNEL_ID)
 
-    @scheduler.scheduled_job(CronTrigger(hour=0, minute=0))
-    async def send_midnight():
-        channel = bot.get_channel(CHANNEL_ID)
+    while True:
+        # ใช้เวลาในโซนประเทศไทย (Asia/Bangkok)
+        tz = pytz.timezone('Asia/Bangkok')
+        now = datetime.now(tz)
+        tomorrow = now + timedelta(days=1)
+        
+        # กำหนดเวลา 23:42
+        night_time = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz) + timedelta(hours=23, minutes=42)
+        
+        wait_time = (night_time - now).total_seconds()
+
+        print(f"⏳ Waiting {wait_time:.2f} seconds until 23:42 Thailand time...")
+        await asyncio.sleep(wait_time)
+
         if channel:
             await send_donation_embed(channel)
-            print(f"✅ Embed sent at {datetime.now(pytz.timezone('Asia/Bangkok'))}")
-
-    scheduler.start()
 
 @bot.tree.command(name="check", description="เช็คเวลาที่เหลือก่อนส่งออโต้ (Dev Only)")
 async def check_time(interaction: discord.Interaction):
@@ -449,7 +456,7 @@ async def on_ready():
 
     print(f"✅ Logged in as {bot.user}")
 
-    start_scheduler(bot)
+    bot.loop.create_task(schedule_midnight_message())
 
 
 bot.run(TOKEN)
