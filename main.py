@@ -1,4 +1,3 @@
-
 from keep_alive import keep_alive
 import logging
 import discord
@@ -417,7 +416,7 @@ async def send_now(interaction: discord.Interaction):
     await interaction.followup.send("เลือกช่องที่ต้องการส่งข้อความ:", view=view, ephemeral=True)
 
 
-@bot.tree.command(name="dm", description="ส่งข้อความ DM หาใครสักคน") 
+@bot.tree.command(name="dm", description="ส่งข้อความ DM หาใครสักคน")
 @app_commands.describe(user="ผู้รับ", message="ข้อความที่ต้องการส่ง")
 async def dm(interaction: discord.Interaction, user: discord.User, message: str):
     allowed_users = [996447615812112546, 1144141941588627578]  # แทนด้วย Discord User ID ของคุณ
@@ -428,17 +427,9 @@ async def dm(interaction: discord.Interaction, user: discord.User, message: str)
 
     try:
         await user.send(f"# 📩 ข้อความจาก {interaction.user.display_name}\n > **{message}**")
-        
-        # ใช้ defer เพื่อยืดเวลาการตอบกลับ
-        await interaction.response.defer(ephemeral=True)  # ยืดเวลาการตอบกลับก่อน
-
-        # หลังจากนั้นส่งข้อความตอบกลับ
-        await interaction.followup.send(f"✅ ส่งข้อความหา {user.name} เรียบร้อยแล้ว", ephemeral=True)
-
+        await interaction.response.send_message(f"✅ ส่งข้อความหา {user.name} เรียบร้อยแล้ว", ephemeral=True)
     except Exception as e:
-        # ใช้ followup สำหรับกรณีข้อผิดพลาด
-        await interaction.followup.send(f"❌ ส่งไม่ได้: {e}", ephemeral=True)
-
+        await interaction.response.send_message(f"❌ ส่งไม่ได้: {e}", ephemeral=True)
 
 @bot.tree.command(name="announce", description="ส่งประกาศไปยังช่องที่กำหนด")
 @app_commands.describe(channel="ช่องที่ต้องการประกาศ", message="ข้อความที่ต้องการประกาศ")
