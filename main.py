@@ -317,7 +317,8 @@ async def send_donation_embed(channel):
 
     await channel.send(content="<@&1359180452698525749>", embed=embed)
 
-async def schedule_custom_message():
+# ⏰ ส่งเวลาเที่ยงคืน (ตามเวลาไทย)
+async def schedule_midnight_message():
     await bot.wait_until_ready()
     channel = bot.get_channel(CHANNEL_ID)
 
@@ -326,23 +327,14 @@ async def schedule_custom_message():
         tz = pytz.timezone('Asia/Bangkok')
         now = datetime.now(tz)
         tomorrow = now + timedelta(days=1)
+        midnight = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz)
+        wait_time = (midnight - now).total_seconds()
 
-        # กำหนดเวลา 08:02 ของวันถัดไป
-        target_time = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz) + timedelta(hours=1, minutes=12)
-
-        # คำนวณเวลาที่ต้องรอจนถึงเวลา 08:02
-        wait_time = (target_time - now).total_seconds()
-
-        # ถ้าเวลาที่คำนวณได้เป็นลบ (ถ้าบอทรันเกินเวลาที่กำหนดไปแล้ว)
-        if wait_time < 0:
-            wait_time += 86400  # ถ้า wait_time เป็นลบ ให้เพิ่ม 24 ชั่วโมง (86400 วินาที)
-
-        print(f"⏳ Waiting {wait_time:.2f} seconds until 08:02 Thailand time...")
+        print(f"⏳ Waiting {wait_time:.2f} seconds until 00:00 Thailand time...")
         await asyncio.sleep(wait_time)
 
         if channel:
             await send_donation_embed(channel)
-
 @bot.tree.command(name="check", description="เช็คเวลาที่เหลือก่อนส่งออโต้ (Dev Only)")
 async def check_time(interaction: discord.Interaction):
     allowed_users = [996447615812112546]  # ใส่ user_id ที่อนุญาตตรงนี้ (เป็น list)
