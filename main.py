@@ -358,14 +358,15 @@ async def check_time(interaction: discord.Interaction):
 
     tz = pytz.timezone('Asia/Bangkok')
     now = datetime.now(tz)
-    tomorrow = now + timedelta(days=1)
 
-    # กำหนดเวลา 23:42 ของวันถัดไป
-    target_time = datetime.combine(tomorrow.date(), datetime.min.time(), tzinfo=tz) + timedelta(hours=23, minutes=42)
+    # สร้างเวลาของวันนี้ 23:42
+    today_target_time = datetime.combine(now.date(), datetime.min.time(), tzinfo=tz) + timedelta(hours=23, minutes=42)
 
-    # คำนวณเวลาที่ต้องรอจนถึง 23:42
-    wait_time = (target_time - now).total_seconds()
+    # ถ้าตอนนี้เลยเวลา 23:42 ไปแล้ว ให้เลื่อนไปวันพรุ่งนี้
+    if now > today_target_time:
+        today_target_time += timedelta(days=1)
 
+    wait_time = (today_target_time - now).total_seconds()
     hours, remainder = divmod(wait_time, 3600)
     minutes, seconds = divmod(remainder, 60)
 
