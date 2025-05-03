@@ -420,24 +420,22 @@ async def send_now(interaction: discord.Interaction):
 async def dm(interaction: discord.Interaction, user: discord.User, message: str):
     allowed_users = [996447615812112546, 1144141941588627578]  # แทนด้วย Discord User ID ของคุณ
 
-    # ตรวจสอบสิทธิ์ผู้ใช้
     if interaction.user.id not in allowed_users:
-        if not interaction.response.is_done():  # ตรวจสอบว่า interaction ยังไม่ได้ตอบกลับ
-            await interaction.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้", ephemeral=True)
+        await interaction.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้", ephemeral=True)
         return
 
     try:
-        # ส่งข้อความ DM
         await user.send(f"# 📩 ข้อความจาก {interaction.user.display_name}\n > **{message}**")
         
-        # ถ้ายังไม่ได้ตอบกลับ interaction ก่อนหน้า, ส่งข้อความตอบกลับ
-        if not interaction.response.is_done():  # ตรวจสอบว่า interaction ยังไม่ได้ตอบกลับ
-            await interaction.response.send_message(f"✅ ส่งข้อความหา {user.name} เรียบร้อยแล้ว", ephemeral=True)
+        # ใช้ defer เพื่อยืดเวลาการตอบกลับ
+        await interaction.response.defer(ephemeral=True)  # ยืดเวลาการตอบกลับก่อน
+
+        # หลังจากนั้นส่งข้อความตอบกลับ
+        await interaction.followup.send(f"✅ ส่งข้อความหา {user.name} เรียบร้อยแล้ว", ephemeral=True)
 
     except Exception as e:
-        # ถ้ามีข้อผิดพลาด ให้ตรวจสอบการตอบกลับ interaction ก่อน
-        if not interaction.response.is_done():
-            await interaction.response.send_message(f"❌ ส่งไม่ได้: {e}", ephemeral=True)
+        # ใช้ followup สำหรับกรณีข้อผิดพลาด
+        await interaction.followup.send(f"❌ ส่งไม่ได้: {e}", ephemeral=True)
 
 @bot.tree.command(name="announce", description="ส่งประกาศไปยังช่องที่กำหนด")
 @app_commands.describe(channel="ช่องที่ต้องการประกาศ", message="ข้อความที่ต้องการประกาศ")
