@@ -336,7 +336,7 @@ async def schedule_midnight_message():
         if channel:
             await send_donation_embed(channel)
 
-@bot.tree.command(name="check", description="เช็คเวลาที่เหลือก่อนส่งออโต้ (Dev Only)")
+@bot.tree.command(name="check", description="เช็คเวลาที่เหลือก่อนส่งออโต้ (Dev Only)") 
 async def check_time(interaction: discord.Interaction):
     allowed_users = [996447615812112546]  # ใส่ user_id ที่อนุญาตตรงนี้ (เป็น list)
 
@@ -347,14 +347,11 @@ async def check_time(interaction: discord.Interaction):
     tz = pytz.timezone('Asia/Bangkok')
     now = datetime.now(tz)
 
-    # สร้างเวลาของวันนี้ 23:42
-    today_target_time = datetime.combine(now.date(), datetime.min.time(), tzinfo=tz) + timedelta(hours=23, minutes=42)
+    # สร้างเวลา MIDNIGHT (00:00) ของวันถัดไป
+    tomorrow = now.date() + timedelta(days=1)
+    midnight_target = datetime.combine(tomorrow, datetime.min.time(), tzinfo=tz)
 
-    # ถ้าตอนนี้เลยเวลา 23:42 ไปแล้ว ให้เลื่อนไปวันพรุ่งนี้
-    if now > today_target_time:
-        today_target_time += timedelta(days=1)
-
-    wait_time = (today_target_time - now).total_seconds()
+    wait_time = (midnight_target - now).total_seconds()
     hours, remainder = divmod(wait_time, 3600)
     minutes, seconds = divmod(remainder, 60)
 
