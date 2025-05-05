@@ -363,24 +363,13 @@ async def check_time(interaction: discord.Interaction):
 # 🧪 Slash Command /an สำหรับทดสอบ (ใช้ได้เฉพาะผู้ใช้ที่มี user_id = 996447615812112546)
 @bot.tree.command(name="an", description="ส่งข้อความทันที")
 async def send_now(interaction: discord.Interaction):
-    try:
-        await interaction.response.defer(ephemeral=True)  # ตอบกลับแบบรอ และซ่อนเฉพาะผู้ใช้เห็น
-    except discord.errors.NotFound:
-        await interaction.followup.send("❌ Interaction นี้ไม่สามารถใช้งานได้อีกแล้ว.", ephemeral=True)
-        return
-
     # ตรวจสอบว่า user_id ตรงกับผู้ที่สามารถใช้คำสั่งได้หรือไม่
-    allowed_users = [996447615812112546]  # เพิ่ม ID คนที่อนุญาตที่นี่
-
-    if interaction.user.id not in allowed_users:
-        await interaction.followup.send("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้", ephemeral=True)
+    if interaction.user.id != 996447615812112546:
+        await interaction.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้", ephemeral=True)
         return
 
     # สร้าง List ของ Channels ที่บอทสามารถเข้าถึง
     channels = interaction.guild.text_channels
-    if not channels:
-        await interaction.followup.send("❌ ไม่พบช่องข้อความในเซิร์ฟเวอร์", ephemeral=True)
-        return
 
     # สร้าง Select Menu ให้ผู้ใช้เลือก Channel
     select = Select(
@@ -389,15 +378,15 @@ async def send_now(interaction: discord.Interaction):
     )
 
     # ฟังก์ชันที่รับค่าจาก Select Menu เมื่อเลือกเสร็จ
-    async def select_callback(select_interaction: discord.Interaction):
+    async def select_callback(interaction: discord.Interaction):
         selected_channel_id = int(select.values[0])
         channel = bot.get_channel(selected_channel_id)
 
         if channel:
             await send_donation_embed(channel)
-            await select_interaction.response.send_message("✅ ส่งข้อความเรียบร้อยแล้ว", ephemeral=True)
+            await interaction.response.send_message("✅ ส่งข้อความเรียบร้อยแล้ว", ephemeral=True)
         else:
-            await select_interaction.response.send_message("❌ ไม่พบ Channel", ephemeral=True)
+            await interaction.response.send_message("❌ ไม่พบ Channel", ephemeral=True)
 
     # ผูก Callback กับ Select
     select.callback = select_callback
@@ -405,13 +394,7 @@ async def send_now(interaction: discord.Interaction):
     # ส่ง Select Menu ให้ผู้ใช้เลือก (ephemeral=True ทำให้ข้อความแสดงเฉพาะแก่ผู้ใช้ที่ใช้คำสั่ง)
     view = View()
     view.add_item(select)
-    
-    # ใช้ followup.send แทนที่ interaction.response.send_message
-    try:
-        await interaction.followup.send("เลือกช่องที่ต้องการส่งข้อความ:", view=view, ephemeral=True)
-    except discord.errors.NotFound as e:
-        await interaction.followup.send(f"❌ เกิดข้อผิดพลาด: {e}", ephemeral=True)
-
+    await interaction.response.send_message("เลือกช่องที่ต้องการส่งข้อความ:", view=view, ephemeral=True)
 
 @bot.tree.command(name="dm", description="ส่งข้อความ DM หาใครสักคน")
 @app_commands.describe(user="ผู้รับ", message="ข้อความที่ต้องการส่ง")
