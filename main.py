@@ -405,10 +405,13 @@ async def send_now(interaction: discord.Interaction):
     # ส่ง Select Menu ให้ผู้ใช้เลือก (ephemeral=True ทำให้ข้อความแสดงเฉพาะแก่ผู้ใช้ที่ใช้คำสั่ง)
     view = View()
     view.add_item(select)
+    
+    # ใช้ followup.send แทนที่ interaction.response.send_message
     try:
         await interaction.followup.send("เลือกช่องที่ต้องการส่งข้อความ:", view=view, ephemeral=True)
-    except discord.errors.NotFound:
-        await interaction.followup.send("❌ Interaction นี้ไม่สามารถใช้งานได้อีกแล้ว.", ephemeral=True)
+    except discord.errors.NotFound as e:
+        await interaction.followup.send(f"❌ เกิดข้อผิดพลาด: {e}", ephemeral=True)
+
 
 @bot.tree.command(name="dm", description="ส่งข้อความ DM หาใครสักคน")
 @app_commands.describe(user="ผู้รับ", message="ข้อความที่ต้องการส่ง")
