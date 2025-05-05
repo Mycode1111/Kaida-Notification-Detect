@@ -363,7 +363,11 @@ async def check_time(interaction: discord.Interaction):
 # 🧪 Slash Command /an สำหรับทดสอบ (ใช้ได้เฉพาะผู้ใช้ที่มี user_id = 996447615812112546)
 @bot.tree.command(name="an", description="ส่งข้อความทันที")
 async def send_now(interaction: discord.Interaction):
-    await interaction.response.defer(ephemeral=True)  # ตอบกลับแบบรอ และซ่อนเฉพาะผู้ใช้เห็น
+    try:
+        await interaction.response.defer(ephemeral=True)  # ตอบกลับแบบรอ และซ่อนเฉพาะผู้ใช้เห็น
+    except discord.errors.NotFound:
+        await interaction.followup.send("❌ Interaction นี้ไม่สามารถใช้งานได้อีกแล้ว.", ephemeral=True)
+        return
 
     # ตรวจสอบว่า user_id ตรงกับผู้ที่สามารถใช้คำสั่งได้หรือไม่
     allowed_users = [996447615812112546]  # เพิ่ม ID คนที่อนุญาตที่นี่
@@ -374,6 +378,9 @@ async def send_now(interaction: discord.Interaction):
 
     # สร้าง List ของ Channels ที่บอทสามารถเข้าถึง
     channels = interaction.guild.text_channels
+    if not channels:
+        await interaction.followup.send("❌ ไม่พบช่องข้อความในเซิร์ฟเวอร์", ephemeral=True)
+        return
 
     # สร้าง Select Menu ให้ผู้ใช้เลือก Channel
     select = Select(
@@ -398,8 +405,10 @@ async def send_now(interaction: discord.Interaction):
     # ส่ง Select Menu ให้ผู้ใช้เลือก (ephemeral=True ทำให้ข้อความแสดงเฉพาะแก่ผู้ใช้ที่ใช้คำสั่ง)
     view = View()
     view.add_item(select)
-    await interaction.followup.send("เลือกช่องที่ต้องการส่งข้อความ:", view=view, ephemeral=True)
-    await asyncio.sleep(1)
+    try:
+        await interaction.followup.send("เลือกช่องที่ต้องการส่งข้อความ:", view=view, ephemeral=True)
+    except discord.errors.NotFound:
+        await interaction.followup.send("❌ Interaction นี้ไม่สามารถใช้งานได้อีกแล้ว.", ephemeral=True)
 
 @bot.tree.command(name="dm", description="ส่งข้อความ DM หาใครสักคน")
 @app_commands.describe(user="ผู้รับ", message="ข้อความที่ต้องการส่ง")
