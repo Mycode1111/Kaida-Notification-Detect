@@ -399,6 +399,7 @@ async def send_now(interaction: discord.Interaction):
     view = View()
     view.add_item(select)
     await interaction.followup.send("เลือกช่องที่ต้องการส่งข้อความ:", view=view, ephemeral=True)
+    await asyncio.sleep(1)
 
 @bot.tree.command(name="dm", description="ส่งข้อความ DM หาใครสักคน")
 @app_commands.describe(user="ผู้รับ", message="ข้อความที่ต้องการส่ง")
