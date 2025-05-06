@@ -157,14 +157,19 @@ async def clear(ctx: discord.Interaction, amount: int):
 
 @bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง")
 async def clear_all(ctx: discord.Interaction):
-    """ Command to delete all messages in the chat """
+    """Command to delete all messages in the chat"""
     if ctx.user.id not in ADMIN_USERS:
         await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
         return
-        
+
+    # แจ้งว่ากำลังประมวลผล เพื่อป้องกัน timeout
     await ctx.response.defer(ephemeral=True)
-    deleted_messages = await ctx.channel.purge()
-    await ctx.response.send_message(f"✅ ลบข้อความแล้ว {len(deleted_messages)} ข้อความ", ephemeral=True)
+
+    try:
+        deleted_messages = await ctx.channel.purge()
+        await ctx.followup.send(f"✅ ลบข้อความแล้ว {len(deleted_messages)} ข้อความ", ephemeral=True)
+    except discord.HTTPException as e:
+        await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
 
 @bot.tree.command(name="clear_user", description="ลบข้อความทั้งหมดจากผู้ใช้")
 async def clear_user(ctx: discord.Interaction, member: discord.Member):
