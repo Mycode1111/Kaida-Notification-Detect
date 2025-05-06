@@ -150,7 +150,8 @@ async def clear(ctx: discord.Interaction, amount: int):
     if amount <= 0 or amount > 100:
         await ctx.response.send_message("❌ ใส่ได้แค่เลข 1 ถึง 100 เท่านั้น!", ephemeral=True)
         return
-    
+        
+    await ctx.response.defer(ephemeral=True)
     deleted_messages = await ctx.channel.purge(limit=amount)
     await ctx.response.send_message(f"✅ ลบข้อความแล้ว {len(deleted_messages)} ข้อความ", ephemeral=True)
 
@@ -160,7 +161,8 @@ async def clear_all(ctx: discord.Interaction):
     if ctx.user.id not in ADMIN_USERS:
         await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
         return
-    
+        
+    await ctx.response.defer(ephemeral=True)
     deleted_messages = await ctx.channel.purge()
     await ctx.response.send_message(f"✅ ลบข้อความแล้ว {len(deleted_messages)} ข้อความ", ephemeral=True)
 
@@ -170,7 +172,8 @@ async def clear_user(ctx: discord.Interaction, member: discord.Member):
     if ctx.user.id not in ADMIN_USERS:
         await ctx.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
         return
-
+        
+    await ctx.response.defer(ephemeral=True)
     deleted_messages = await ctx.channel.purge(limit=100, check=lambda m: m.author == member)
     await ctx.response.send_message(f"✅ ลบข้อความแล้ว {len(deleted_messages)} ข้อความ จา่ก {member.mention}.", ephemeral=True)
 
