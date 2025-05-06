@@ -157,18 +157,36 @@ async def clear(ctx: discord.Interaction, amount: int):
 
 @bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง")
 async def clear_all(ctx: discord.Interaction):
-    """Command to delete all messages in the chat"""
+    """ลบข้อความทั้งหมดในแชนแนล"""
     if ctx.user.id not in ADMIN_USERS:
         await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
         return
 
-    # แจ้งว่ากำลังประมวลผล เพื่อป้องกัน timeout
+    # ส่ง defer ทันที เพื่อกัน interaction timeout
     await ctx.response.defer(ephemeral=True)
+    print(f"[clear_all] เริ่มลบข้อความใน {ctx.channel.name}")
 
+    deleted_total = 0
     try:
-        deleted_messages = await ctx.channel.purge()
-        await ctx.followup.send(f"✅ ลบข้อความแล้ว {len(deleted_messages)} ข้อความ", ephemeral=True)
-    except discord.HTTPException as e:
+        while True:
+            # ลบสูงสุดครั้งละ 100 ข้อความ (limit สูงสุดของ purge)
+            deleted = await ctx.channel.purge(limit=100)
+            deleted_count = len(deleted)
+            deleted_total += deleted_count
+            print(f"[clear_all] ลบชุดนี้ได้ {deleted_count} ข้อความ")
+
+            # ถ้าไม่มีข้อความเหลือให้ลบแล้ว ให้หยุด
+            if deleted_count == 0:
+                break
+
+            # พักนิดหน่อย เพื่อหลีกเลี่ยง rate limit
+            await asyncio.sleep(1)
+
+        # ส่งข้อความสรุปหลังลบเสร็จ
+        await ctx.followup.send(f"✅ ลบข้อความทั้งหมดแล้ว {deleted_total} ข้อความ", ephemeral=True)
+
+    except Exception as e:
+        print(f"[clear_all] เกิดข้อผิดพลาด: {e}")
         await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
 
 @bot.tree.command(name="clear_user", description="ลบข้อความทั้งหมดจากผู้ใช้")
