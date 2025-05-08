@@ -365,6 +365,13 @@ async def send_donation_embed(channel):
 
     await channel.send(content="<@&1359180452698525749>", embed=embed)
 
+async def send_donation_embed(channel):
+    embed = discord.Embed(
+        description="<@&1359180452698525749>",
+        color=discord.Color(0x52525A),
+        timestamp=discord.utils.utcnow()
+)
+
 # ⏰ ส่งเวลาเที่ยงคืน (ตามเวลาไทย)
 async def schedule_midnight_message():
     await bot.wait_until_ready()
