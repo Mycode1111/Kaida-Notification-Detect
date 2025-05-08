@@ -140,9 +140,34 @@ async def on_message(message):
 
 # -------------------- Admin Commands -------------------- #
 
-@bot.tree.command(name="clear", description="ลบข้อความตามจำนวนที่เลือก") 
+@bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง")
+async def clear_all(ctx: discord.Interaction):
+    if ctx.user.id not in ADMIN_USERS:
+        await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
+        return
+
+    await ctx.response.defer(ephemeral=True)
+
+    try:
+        deleted_total = 0
+        while True:
+            deleted = await ctx.channel.purge(limit=100)
+            deleted_count = len(deleted)
+            deleted_total += deleted_count
+            if deleted_count == 0:
+                break
+            await asyncio.sleep(1)  # ป้องกัน rate limit
+
+        await ctx.followup.send(f"✅ ลบข้อความทั้งหมด {deleted_total} ข้อความแล้ว", ephemeral=True)
+
+    except Exception as e:
+        await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
+
+
+# ลบข้อความตามจำนวน
+@bot.tree.command(name="clear", description="ลบข้อความตามจำนวนที่เลือก")
+@app_commands.describe(amount="จำนวนข้อความ (1-100)")
 async def clear(ctx: discord.Interaction, amount: int):
-    """Command to delete a specified number of messages"""
     if ctx.user.id not in ADMIN_USERS:
         await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
         return
@@ -151,77 +176,37 @@ async def clear(ctx: discord.Interaction, amount: int):
         await ctx.response.send_message("❌ ใส่ได้แค่เลข 1 ถึง 100 เท่านั้น!", ephemeral=True)
         return
 
-    # กัน timeout interaction
     await ctx.response.defer(ephemeral=True)
 
     try:
         deleted_messages = await ctx.channel.purge(limit=amount)
-        # ส่งข้อความเมื่อสำเร็จ
         await ctx.followup.send(f"✅ ลบข้อความแล้ว {len(deleted_messages)} ข้อความ", ephemeral=True)
     except Exception as e:
-        # ส่งข้อความเมื่อเกิดข้อผิดพลาด
         await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
 
-@bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง")
-async def clear_all(ctx: discord.Interaction):
-    """ลบข้อความทั้งหมดในแชนแนล"""
-    if ctx.user.id not in ADMIN_USERS:
-        await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
-        return
 
-    # ส่ง defer ทันที เพื่อกัน interaction timeout
-    await ctx.response.defer(ephemeral=True)
-
-    deleted_total = 0
-    try:
-        while True:
-            # ลบสูงสุดครั้งละ 100 ข้อความ (limit สูงสุดของ purge)
-            deleted = await ctx.channel.purge(limit=100)
-            deleted_count = len(deleted)
-            deleted_total += deleted_count
-
-            # ถ้าไม่มีข้อความเหลือให้ลบแล้ว ให้หยุด
-            if deleted_count == 0:
-                break
-
-            # พักนิดหน่อย เพื่อหลีกเลี่ยง rate limit
-            await asyncio.sleep(1)
-
-        # ส่งข้อความสรุปหลังลบเสร็จ
-        await ctx.followup.send(f"✅ ลบข้อความทั้งหมดแล้ว {deleted_total} ข้อความ", ephemeral=True)
-
-    except Exception as e:
-        # ส่งข้อความเมื่อเกิดข้อผิดพลาด
-        await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
-
-@bot.tree.command(name="clear_user", description="ลบข้อความทั้งหมดจากผู้ใช้") 
+# ลบข้อความจากผู้ใช้เฉพาะคน
+@bot.tree.command(name="clear_user", description="ลบข้อความทั้งหมดจากผู้ใช้")
 async def clear_user(ctx: discord.Interaction, member: discord.Member):
-    """Command to delete all messages from a specific user in the current channel"""
     if ctx.user.id not in ADMIN_USERS:
         await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
         return
 
-    # กัน timeout interaction
     await ctx.response.defer(ephemeral=True)
 
     try:
         deleted_total = 0
-
         while True:
-            # ลบสูงสุดครั้งละ 100 ข้อความ โดย filter เฉพาะข้อความของ member
             deleted = await ctx.channel.purge(limit=100, check=lambda m: m.author == member)
-            deleted_count = len(deleted)
-            deleted_total += deleted_count
-
-            if deleted_count == 0:
+            count = len(deleted)
+            deleted_total += count
+            if count == 0:
                 break
-
-            await asyncio.sleep(1)  # ป้องกัน rate limit
+            await asyncio.sleep(1)
 
         await ctx.followup.send(
             f"✅ ลบข้อความของ {member.mention} ทั้งหมด {deleted_total} ข้อความแล้ว", ephemeral=True
         )
-
     except Exception as e:
         await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
 
