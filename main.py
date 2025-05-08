@@ -342,9 +342,10 @@ async def help(ctx: discord.Interaction):
 
     await ctx.response.send_message(embed=embed, ephemeral=True)
 
-# 🎯 ฟังก์ชันส่ง Embed   
+# 🎯 ฟังก์ชันส่ง Embed  
 async def send_donation_embed(channel):
-    embed = discord.Embed(
+    # Embed แรก
+    embed1 = discord.Embed(
         description="```ansi\n"
                     "[1;2m[1;37mบริจาคเพชรกันด้วย [1;34mคนละ [1;37m100 [1;34mQi\n"
                     "[1;31m[1;47mแต่ถ้าใครอยากจะบริจาคมากกว่านี้ ก็สามารถบริจาคได้นะคร้าบบ[0m[1;34m\n"
@@ -352,18 +353,31 @@ async def send_donation_embed(channel):
         color=discord.Color(0x52525A),
         timestamp=discord.utils.utcnow()
     )
-    embed.set_author(
+    embed1.set_author(
         name="ระบบแจ้งเตือนอัตโนมัติ", 
-        icon_url="https://cdn.discordapp.com/attachments/1038838432434229328/1362069141296779394/Kaida_logo.png?ex=680af07d&is=68099efd&hm=b2de5054d0d3ebb185ef2a3ebf5b5c9b8ca5a49af06c116511244eee0961e64d&"
+        icon_url="https://cdn.discordapp.com/attachments/1038838432434229328/1362069141296779394/Kaida_logo.png"
     )
-    embed.add_field(name="ส่งหลักฐานได้ที่นี่", value="[Click](https://discord.com/channels/1359152679284375752/1359202427638906960)", inline=True)
-    embed.add_field(name="หรือไม่ก็คลิกที่นี่", value="<#1359202427638906960>", inline=True)
-    embed.set_footer(
-    text="Kaida | Made by null",
-    icon_url="https://cdn.discordapp.com/attachments/1038838432434229328/1362069141296779394/Kaida_logo.png?ex=680af07d&is=68099efd&hm=b2de5054d0d3ebb185ef2a3ebf5b5c9b8ca5a49af06c116511244eee0961e64d&"
-)
+    embed1.add_field(name="ส่งหลักฐานได้ที่นี่", value="[Click](https://discord.com/channels/1359152679284375752/1359202427638906960)", inline=True)
+    embed1.add_field(name="หรือไม่ก็คลิกที่นี่", value="<#1359202427638906960>", inline=True)
+    embed1.set_footer(
+        text="Kaida | Made by null",
+        icon_url="https://cdn.discordapp.com/attachments/1038838432434229328/1362069141296779394/Kaida_logo.png"
+    )
 
-    await channel.send(content="<@&1359180452698525749>", embed=embed)
+    # Embed สอง (มี mention role อยู่ใน embed)
+    embed2 = discord.Embed(
+        description="<@&1359180452698525749>",
+        color=discord.Color(0x52525A),
+        timestamp=discord.utils.utcnow()
+    )
+    embed2.set_footer(
+        text="Kaida | Made by null",
+        icon_url="https://cdn.discordapp.com/attachments/1038838432434229328/1362069141296779394/Kaida_logo.png"
+    )
+
+    # ส่ง embed ทั้งสอง
+    await channel.send(embed=embed1)
+    await channel.send(embed=embed2)
 
 # ⏰ ส่งเวลาเที่ยงคืน (ตามเวลาไทย)
 async def schedule_midnight_message():
