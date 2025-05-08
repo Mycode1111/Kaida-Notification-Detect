@@ -156,9 +156,12 @@ async def clear(ctx: discord.Interaction, amount: int):
 
     try:
         deleted_messages = await ctx.channel.purge(limit=amount)
+        # ส่งข้อความเมื่อสำเร็จ
         await ctx.followup.send(f"✅ ลบข้อความแล้ว {len(deleted_messages)} ข้อความ", ephemeral=True)
     except Exception as e:
+        # ส่งข้อความเมื่อเกิดข้อผิดพลาด
         await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
+
 
 @bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง")
 async def clear_all(ctx: discord.Interaction):
@@ -169,7 +172,6 @@ async def clear_all(ctx: discord.Interaction):
 
     # ส่ง defer ทันที เพื่อกัน interaction timeout
     await ctx.response.defer(ephemeral=True)
-    print(f"[clear_all] เริ่มลบข้อความใน {ctx.channel.name}")
 
     deleted_total = 0
     try:
@@ -178,7 +180,6 @@ async def clear_all(ctx: discord.Interaction):
             deleted = await ctx.channel.purge(limit=100)
             deleted_count = len(deleted)
             deleted_total += deleted_count
-            print(f"[clear_all] ลบชุดนี้ได้ {deleted_count} ข้อความ")
 
             # ถ้าไม่มีข้อความเหลือให้ลบแล้ว ให้หยุด
             if deleted_count == 0:
@@ -191,8 +192,9 @@ async def clear_all(ctx: discord.Interaction):
         await ctx.followup.send(f"✅ ลบข้อความทั้งหมดแล้ว {deleted_total} ข้อความ", ephemeral=True)
 
     except Exception as e:
-        print(f"[clear_all] เกิดข้อผิดพลาด: {e}")
+        # ส่งข้อความเมื่อเกิดข้อผิดพลาด
         await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
+
 
 @bot.tree.command(name="clear_user", description="ลบข้อความทั้งหมดจากผู้ใช้") 
 async def clear_user(ctx: discord.Interaction, member: discord.Member):
@@ -224,6 +226,7 @@ async def clear_user(ctx: discord.Interaction, member: discord.Member):
 
     except Exception as e:
         await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
+
 
 @bot.tree.command(name="add_admin", description="เพิ่มบทบาทผู้ดูแล")
 async def add_admin(ctx: discord.Interaction, member: discord.Member):
