@@ -140,10 +140,23 @@ async def on_message(message):
 
 # -------------------- Admin Commands -------------------- #
 
-@bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง")
+@bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง") 
 async def clear_all(ctx: discord.Interaction):
     if ctx.user.id not in ADMIN_USERS:
         await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
+        return
+
+    if not ctx.guild:
+        await ctx.response.send_message("❌ คำสั่งนี้ใช้ได้เฉพาะในเซิร์ฟเวอร์เท่านั้น", ephemeral=True)
+        return
+
+    channel = ctx.channel
+    if not isinstance(channel, discord.TextChannel):
+        await ctx.response.send_message("❌ คำสั่งนี้ใช้ได้เฉพาะในช่องข้อความเท่านั้น", ephemeral=True)
+        return
+
+    if not channel.permissions_for(ctx.guild.me).manage_messages:
+        await ctx.response.send_message("❌ บอทไม่มีสิทธิ์จัดการข้อความในช่องนี้", ephemeral=True)
         return
 
     await ctx.response.defer(ephemeral=True)
@@ -151,20 +164,18 @@ async def clear_all(ctx: discord.Interaction):
     try:
         deleted_total = 0
         while True:
-            deleted = await ctx.channel.purge(limit=100)
-            deleted_count = len(deleted)
-            deleted_total += deleted_count
-            if deleted_count == 0:
+            deleted = await channel.purge(limit=100)
+            count = len(deleted)
+            deleted_total += count
+            if count == 0:
                 break
-            await asyncio.sleep(1)  # ป้องกัน rate limit
+            await asyncio.sleep(1)
 
         await ctx.followup.send(f"✅ ลบข้อความทั้งหมด {deleted_total} ข้อความแล้ว", ephemeral=True)
-
     except Exception as e:
         await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
 
 
-# ลบข้อความตามจำนวน
 @bot.tree.command(name="clear", description="ลบข้อความตามจำนวนที่เลือก")
 @app_commands.describe(amount="จำนวนข้อความ (1-100)")
 async def clear(ctx: discord.Interaction, amount: int):
@@ -176,20 +187,46 @@ async def clear(ctx: discord.Interaction, amount: int):
         await ctx.response.send_message("❌ ใส่ได้แค่เลข 1 ถึง 100 เท่านั้น!", ephemeral=True)
         return
 
+    if not ctx.guild:
+        await ctx.response.send_message("❌ คำสั่งนี้ใช้ได้เฉพาะในเซิร์ฟเวอร์เท่านั้น", ephemeral=True)
+        return
+
+    channel = ctx.channel
+    if not isinstance(channel, discord.TextChannel):
+        await ctx.response.send_message("❌ คำสั่งนี้ใช้ได้เฉพาะในช่องข้อความเท่านั้น", ephemeral=True)
+        return
+
+    if not channel.permissions_for(ctx.guild.me).manage_messages:
+        await ctx.response.send_message("❌ บอทไม่มีสิทธิ์จัดการข้อความในช่องนี้", ephemeral=True)
+        return
+
     await ctx.response.defer(ephemeral=True)
 
     try:
-        deleted_messages = await ctx.channel.purge(limit=amount)
+        deleted_messages = await channel.purge(limit=amount)
         await ctx.followup.send(f"✅ ลบข้อความแล้ว {len(deleted_messages)} ข้อความ", ephemeral=True)
     except Exception as e:
         await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
 
 
-# ลบข้อความจากผู้ใช้เฉพาะคน
 @bot.tree.command(name="clear_user", description="ลบข้อความทั้งหมดจากผู้ใช้")
+@app_commands.describe(member="ผู้ใช้ที่ต้องการลบข้อความ")
 async def clear_user(ctx: discord.Interaction, member: discord.Member):
     if ctx.user.id not in ADMIN_USERS:
         await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
+        return
+
+    if not ctx.guild:
+        await ctx.response.send_message("❌ คำสั่งนี้ใช้ได้เฉพาะในเซิร์ฟเวอร์เท่านั้น", ephemeral=True)
+        return
+
+    channel = ctx.channel
+    if not isinstance(channel, discord.TextChannel):
+        await ctx.response.send_message("❌ คำสั่งนี้ใช้ได้เฉพาะในช่องข้อความเท่านั้น", ephemeral=True)
+        return
+
+    if not channel.permissions_for(ctx.guild.me).manage_messages:
+        await ctx.response.send_message("❌ บอทไม่มีสิทธิ์จัดการข้อความในช่องนี้", ephemeral=True)
         return
 
     await ctx.response.defer(ephemeral=True)
@@ -197,7 +234,7 @@ async def clear_user(ctx: discord.Interaction, member: discord.Member):
     try:
         deleted_total = 0
         while True:
-            deleted = await ctx.channel.purge(limit=100, check=lambda m: m.author == member)
+            deleted = await channel.purge(limit=100, check=lambda m: m.author == member)
             count = len(deleted)
             deleted_total += count
             if count == 0:
