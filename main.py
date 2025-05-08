@@ -478,7 +478,7 @@ async def announce(interaction: discord.Interaction, channel: discord.TextChanne
 @bot.event
 async def on_ready():
     # ตั้งกิจกรรมเป็น "Streaming" (แสดง YouTube หรือกิจกรรมอื่นๆ)
-    activity = discord.Streaming(name="Kaida Notification-Detect ready!💚", url="https://www.youtube.com/watch?v=bH3vMDK_Hn0")
+    activity = discord.Streaming(name="Bot ready!💚", url="https://www.youtube.com/watch?v=bH3vMDK_Hn0")
     await bot.change_presence(status=discord.Status.idle, activity=activity)  # เปลี่ยนสถานะเป็น Online
 
     try:
