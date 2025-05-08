@@ -162,7 +162,6 @@ async def clear(ctx: discord.Interaction, amount: int):
         # ส่งข้อความเมื่อเกิดข้อผิดพลาด
         await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
 
-
 @bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง")
 async def clear_all(ctx: discord.Interaction):
     """ลบข้อความทั้งหมดในแชนแนล"""
@@ -195,7 +194,6 @@ async def clear_all(ctx: discord.Interaction):
         # ส่งข้อความเมื่อเกิดข้อผิดพลาด
         await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
 
-
 @bot.tree.command(name="clear_user", description="ลบข้อความทั้งหมดจากผู้ใช้") 
 async def clear_user(ctx: discord.Interaction, member: discord.Member):
     """Command to delete all messages from a specific user in the current channel"""
@@ -226,7 +224,6 @@ async def clear_user(ctx: discord.Interaction, member: discord.Member):
 
     except Exception as e:
         await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
-
 
 @bot.tree.command(name="add_admin", description="เพิ่มบทบาทผู้ดูแล")
 async def add_admin(ctx: discord.Interaction, member: discord.Member):
