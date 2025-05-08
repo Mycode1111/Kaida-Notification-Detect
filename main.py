@@ -344,11 +344,7 @@ async def help(ctx: discord.Interaction):
 
 # 🎯 ฟังก์ชันส่ง Embed  
 async def send_donation_embed(channel):
-    # ส่ง embed ทั้งสอง
-    await channel.send(embed=embed1)
-    await channel.send(embed=embed2)
-    
-    # Embed แรก
+    # สร้าง Embed แรก
     embed1 = discord.Embed(
         description="```ansi\n"
                     "[1;2m[1;37mบริจาคเพชรกันด้วย [1;34mคนละ [1;37m100 [1;34mQi\n"
@@ -368,11 +364,15 @@ async def send_donation_embed(channel):
         icon_url="https://cdn.discordapp.com/attachments/1038838432434229328/1362069141296779394/Kaida_logo.png"
     )
 
-    # Embed สอง (มี mention role อยู่ใน embed)
+    # สร้าง Embed สอง (มี mention role อยู่ใน embed)
     embed2 = discord.Embed(
         description="<@&1359180452698525749>",
         color=discord.Color(0x52525A)
     )
+
+    # ส่ง embed ทั้งสอง
+    await channel.send(embed=embed1)
+    await channel.send(embed=embed2)
 
 # ⏰ ส่งเวลาเที่ยงคืน (ตามเวลาไทย)
 async def schedule_midnight_message():
