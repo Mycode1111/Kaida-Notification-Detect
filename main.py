@@ -159,7 +159,7 @@ async def clear_all(ctx: discord.Interaction):
         await ctx.response.send_message("❌ บอทไม่มีสิทธิ์จัดการข้อความในช่องนี้", ephemeral=True)
         return
 
-    # ส่งข้อความก่อน เพื่อกัน interaction หมดอายุ
+    # ตอบก่อนแบบ ephemeral ให้ interaction ไม่ timeout
     await ctx.response.send_message("⏳ กำลังลบข้อความทั้งหมด...", ephemeral=True)
 
     try:
@@ -169,13 +169,14 @@ async def clear_all(ctx: discord.Interaction):
             count = len(deleted)
             deleted_total += count
             if count < 100:
-                break  # ไม่มีข้อความเหลือแล้ว
+                break
+            await asyncio.sleep(1)  # ป้องกัน rate limit
 
-        # แก้ไขข้อความที่ส่งไปก่อนหน้านี้
-        await ctx.edit_original_response(content=f"✅ ลบข้อความทั้งหมดแล้ว ({deleted_total} ข้อความ)")
-    
+        # ส่ง followup (แทนการแก้ไขข้อความเดิม ซึ่งอาจโดน purge ไปแล้ว)
+        await ctx.followup.send(f"✅ ลบข้อความทั้งหมดแล้ว ({deleted_total} ข้อความ)", ephemeral=True)
+
     except Exception as e:
-        await ctx.edit_original_response(content=f"⚠️ เกิดข้อผิดพลาด: {str(e)}")
+        await ctx.followup.send(f"⚠️ เกิดข้อผิดพลาด: {str(e)}", ephemeral=True)
 
 @bot.tree.command(name="clear", description="ลบข้อความตามจำนวนที่เลือก")
 @app_commands.describe(amount="จำนวนข้อความ (1-100)")
