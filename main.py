@@ -140,6 +140,9 @@ async def on_message(message):
 
 # -------------------- Admin Commands -------------------- #
 
+import discord
+import asyncio
+
 @bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง")
 async def clear_all(ctx: discord.Interaction):
     if ctx.user.id not in ADMIN_USERS:
@@ -159,8 +162,8 @@ async def clear_all(ctx: discord.Interaction):
         await ctx.response.send_message("❌ บอทไม่มีสิทธิ์จัดการข้อความในช่องนี้", ephemeral=True)
         return
 
-    # ✅ Defer interaction ทันที เพื่อกัน timeout (ไม่มี timeout จะไม่เจอ 404)
-    await ctx.response.defer(ephemeral=True)
+    # ✅ ตอบกลับเพื่อยืนยันคำสั่ง
+    await ctx.response.send_message("✅ กำลังลบข้อความทั้งหมด...", ephemeral=True)
 
     try:
         deleted_total = 0
