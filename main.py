@@ -140,9 +140,6 @@ async def on_message(message):
 
 # -------------------- Admin Commands -------------------- #
 
-import discord
-import asyncio
-
 @bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง")
 async def clear_all(ctx: discord.Interaction):
     if ctx.user.id not in ADMIN_USERS:
@@ -162,26 +159,25 @@ async def clear_all(ctx: discord.Interaction):
         await ctx.response.send_message("❌ บอทไม่มีสิทธิ์จัดการข้อความในช่องนี้", ephemeral=True)
         return
 
-    # ✅ ตอบกลับทันทีเพื่อยืนยันคำสั่ง
-    await ctx.response.send_message("✅ กำลังลบข้อความทั้งหมด...", ephemeral=True)
+    # ✅ ส่งการตอบกลับล่วงหน้าโดยทันที เพื่อหลีกเลี่ยงการหมดอายุของ interaction
+    await ctx.response.defer(ephemeral=True)
 
-    # เริ่มกระบวนการลบข้อความ
     try:
         deleted_total = 0
         while True:
+            # ลบข้อความ 50 ข้อความในแต่ละครั้ง
             deleted = await channel.purge(limit=50)
             count = len(deleted)
             deleted_total += count
             if count < 50:
                 break
-            # หน่วงเวลาเล็กน้อยระหว่างการลบเพื่อป้องกัน timeout
+            # หน่วงเวลาสั้น ๆ ระหว่างการลบ
             await asyncio.sleep(2)
 
-        # ส่งข้อความหลังจากลบข้อความเสร็จ
+        # ใช้ followup เพื่อตอบกลับหลังจากลบข้อความทั้งหมดเสร็จ
         await ctx.followup.send(f"✅ ลบข้อความทั้งหมดแล้ว ({deleted_total} ข้อความ)", ephemeral=True)
 
-    except discord.errors.NotFound as e:
-        # Handle error when interaction is no longer valid
+    except discord.errors.NotFound:
         await ctx.followup.send("⚠️ Interaction หมดอายุหรือไม่สามารถตอบกลับได้!", ephemeral=True)
     except Exception as e:
         await ctx.followup.send(f"⚠️ เกิดข้อผิดพลาด: {str(e)}", ephemeral=True)
