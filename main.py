@@ -139,16 +139,6 @@ async def on_message(message):
     await bot.process_commands(message)
 
 # -------------------- Admin Commands -------------------- #
-
-@bot.tree.command(name="clear_all", description="Delete all messages in the chat")
-async def clear_all(ctx: discord.Interaction):
-    """ Command to delete all messages in the chat """
-    if ctx.user.id not in ADMIN_USERS:
-        await ctx.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
-        return
-    
-    deleted_messages = await ctx.channel.purge()
-    await ctx.response.send_message(f"✅ Deleted all {len(deleted_messages)} messages.", ephemeral=True)
         
 @bot.tree.command(name="clear", description="ลบข้อความตามจำนวนที่เลือก")
 @app_commands.describe(amount="จำนวนข้อความ (1-100)")
@@ -181,7 +171,22 @@ async def clear(ctx: discord.Interaction, amount: int):
         await ctx.followup.send(f"✅ ลบข้อความแล้ว {len(deleted_messages)} ข้อความ", ephemeral=True)
     except Exception as e:
         await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
+        
+@bot.tree.command(name="clear_all", description="Delete all messages in the chat")
+async def clear_all(ctx: discord.Interaction):
+    """ Command to delete all messages in the chat """
+    if ctx.user.id not in ADMIN_USERS:
+        await ctx.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
+        return
+    
+    # ใช้ defer เพื่อบอก Discord ว่าจะใช้เวลาสักครู่ในการทำคำสั่งนี้
+    await ctx.response.defer()
 
+    # ลบข้อความทั้งหมดในช่องแชท
+    deleted_messages = await ctx.channel.purge()
+
+    # ใช้ followup เพื่อส่งข้อความหลังจากตอบกลับการโต้ตอบแล้ว
+    await ctx.followup.send(f"✅ Deleted all {len(deleted_messages)} messages.", ephemeral=True)
 
 @bot.tree.command(name="clear_user", description="ลบข้อความทั้งหมดจากผู้ใช้")
 @app_commands.describe(member="ผู้ใช้ที่ต้องการลบข้อความ")
