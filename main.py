@@ -436,7 +436,7 @@ async def check_time(interaction: discord.Interaction):
         ephemeral=True
     )
 
-# 🧪 Slash Command /an สำหรับทดสอบ (ใช้ได้เฉพาะผู้ใช้ที่มี user_id = 996447615812112546)
+# 🧪 Slash Command /an สำหรับทดสอบ (ใช้ได้เฉพาะผู้ใช้ที่มี user_id = 996447615812112546) 
 @bot.tree.command(name="an", description="ส่งข้อความทันที")
 async def send_now(interaction: discord.Interaction):
     # ตรวจสอบว่า user_id ตรงกับผู้ที่สามารถใช้คำสั่งได้หรือไม่
@@ -444,33 +444,11 @@ async def send_now(interaction: discord.Interaction):
         await interaction.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้", ephemeral=True)
         return
 
-    # สร้าง List ของ Channels ที่บอทสามารถเข้าถึง
-    channels = interaction.guild.text_channels
+    # ตอบกลับแบบ ephemeral เพื่อแจ้งผู้ใช้ว่ากำลังดำเนินการ
+    await interaction.response.send_message("✅ ส่งข้อความเรียบร้อยแล้ว", ephemeral=True)
 
-    # สร้าง Select Menu ให้ผู้ใช้เลือก Channel
-    select = Select(
-        placeholder="เลือก Channel ที่จะส่งข้อความ",
-        options=[discord.SelectOption(label=channel.name, value=str(channel.id)) for channel in channels]
-    )
-
-    # ฟังก์ชันที่รับค่าจาก Select Menu เมื่อเลือกเสร็จ
-    async def select_callback(interaction: discord.Interaction):
-        selected_channel_id = int(select.values[0])
-        channel = bot.get_channel(selected_channel_id)
-
-        if channel:
-            await send_donation_embed(channel)
-            await interaction.response.send_message("✅ ส่งข้อความเรียบร้อยแล้ว", ephemeral=True)
-        else:
-            await interaction.response.send_message("❌ ไม่พบ Channel", ephemeral=True)
-
-    # ผูก Callback กับ Select
-    select.callback = select_callback
-
-    # ส่ง Select Menu ให้ผู้ใช้เลือก (ephemeral=True ทำให้ข้อความแสดงเฉพาะแก่ผู้ใช้ที่ใช้คำสั่ง)
-    view = View()
-    view.add_item(select)
-    await interaction.response.send_message("เลือกช่องที่ต้องการส่งข้อความ:", view=view, ephemeral=True)
+    # ส่ง embed หรือข้อความลงในแชนแนลที่ใช้คำสั่ง
+    await send_donation_embed(interaction.channel)
 
 @bot.tree.command(name="dm", description="ส่งข้อความ DM หาใครสักคน")
 @app_commands.describe(user="ผู้รับ", message="ข้อความที่ต้องการส่ง")
