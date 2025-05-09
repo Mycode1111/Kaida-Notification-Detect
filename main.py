@@ -165,19 +165,21 @@ async def clear_all(ctx: discord.Interaction):
     try:
         deleted_total = 0
         while True:
-            deleted = await channel.purge(limit=100)
+            # ลบข้อความ 50 ข้อความในแต่ละครั้ง
+            deleted = await channel.purge(limit=50)
             count = len(deleted)
             deleted_total += count
-            if count < 100:
+            if count < 50:
                 break
-            await asyncio.sleep(1)
+            # เพิ่มการหน่วงเวลาเพื่อหลีกเลี่ยงปัญหาจากการเกินเวลา
+            await asyncio.sleep(2)
 
         # ✅ ใช้ followup ตอบกลับหลังจาก purge เสร็จ
         await ctx.followup.send(f"✅ ลบข้อความทั้งหมดแล้ว ({deleted_total} ข้อความ)", ephemeral=True)
 
     except Exception as e:
         await ctx.followup.send(f"⚠️ เกิดข้อผิดพลาด: {str(e)}", ephemeral=True)
-
+        
 @bot.tree.command(name="clear", description="ลบข้อความตามจำนวนที่เลือก")
 @app_commands.describe(amount="จำนวนข้อความ (1-100)")
 async def clear(ctx: discord.Interaction, amount: int):
