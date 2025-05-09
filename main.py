@@ -140,47 +140,15 @@ async def on_message(message):
 
 # -------------------- Admin Commands -------------------- #
 
-@bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง")
+@bot.tree.command(name="clear_all", description="Delete all messages in the chat")
 async def clear_all(ctx: discord.Interaction):
+    """ Command to delete all messages in the chat """
     if ctx.user.id not in ADMIN_USERS:
-        await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
+        await ctx.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
         return
-
-    if not ctx.guild:
-        await ctx.response.send_message("❌ คำสั่งนี้ใช้ได้เฉพาะในเซิร์ฟเวอร์เท่านั้น", ephemeral=True)
-        return
-
-    channel = ctx.channel
-    if not isinstance(channel, discord.TextChannel):
-        await ctx.response.send_message("❌ คำสั่งนี้ใช้ได้เฉพาะในช่องข้อความเท่านั้น", ephemeral=True)
-        return
-
-    if not channel.permissions_for(ctx.guild.me).manage_messages:
-        await ctx.response.send_message("❌ บอทไม่มีสิทธิ์จัดการข้อความในช่องนี้", ephemeral=True)
-        return
-
-    # ✅ ส่งการตอบกลับล่วงหน้าโดยทันที เพื่อหลีกเลี่ยงการหมดอายุของ interaction
-    await ctx.response.defer(ephemeral=True)
-
-    try:
-        deleted_total = 0
-        while True:
-            # ลบข้อความ 50 ข้อความในแต่ละครั้ง
-            deleted = await channel.purge(limit=50)
-            count = len(deleted)
-            deleted_total += count
-            if count < 50:
-                break
-            # หน่วงเวลาสั้น ๆ ระหว่างการลบ
-            await asyncio.sleep(2)
-
-        # ใช้ followup เพื่อตอบกลับหลังจากลบข้อความทั้งหมดเสร็จ
-        await ctx.followup.send(f"✅ ลบข้อความทั้งหมดแล้ว ({deleted_total} ข้อความ)", ephemeral=True)
-
-    except discord.errors.NotFound:
-        await ctx.followup.send("⚠️ Interaction หมดอายุหรือไม่สามารถตอบกลับได้!", ephemeral=True)
-    except Exception as e:
-        await ctx.followup.send(f"⚠️ เกิดข้อผิดพลาด: {str(e)}", ephemeral=True)
+    
+    deleted_messages = await ctx.channel.purge()
+    await ctx.response.send_message(f"✅ Deleted all {len(deleted_messages)} messages.", ephemeral=True)
         
 @bot.tree.command(name="clear", description="ลบข้อความตามจำนวนที่เลือก")
 @app_commands.describe(amount="จำนวนข้อความ (1-100)")
