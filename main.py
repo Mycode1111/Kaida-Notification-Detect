@@ -162,24 +162,27 @@ async def clear_all(ctx: discord.Interaction):
         await ctx.response.send_message("❌ บอทไม่มีสิทธิ์จัดการข้อความในช่องนี้", ephemeral=True)
         return
 
-    # ✅ ตอบกลับเพื่อยืนยันคำสั่ง
+    # ✅ ตอบกลับทันทีเพื่อยืนยันคำสั่ง
     await ctx.response.send_message("✅ กำลังลบข้อความทั้งหมด...", ephemeral=True)
 
+    # เริ่มกระบวนการลบข้อความ
     try:
         deleted_total = 0
         while True:
-            # ลบข้อความ 50 ข้อความในแต่ละครั้ง
             deleted = await channel.purge(limit=50)
             count = len(deleted)
             deleted_total += count
             if count < 50:
                 break
-            # เพิ่มการหน่วงเวลาเพื่อหลีกเลี่ยงปัญหาจากการเกินเวลา
+            # หน่วงเวลาเล็กน้อยระหว่างการลบเพื่อป้องกัน timeout
             await asyncio.sleep(2)
 
-        # ✅ ใช้ followup ตอบกลับหลังจาก purge เสร็จ
+        # ส่งข้อความหลังจากลบข้อความเสร็จ
         await ctx.followup.send(f"✅ ลบข้อความทั้งหมดแล้ว ({deleted_total} ข้อความ)", ephemeral=True)
 
+    except discord.errors.NotFound as e:
+        # Handle error when interaction is no longer valid
+        await ctx.followup.send("⚠️ Interaction หมดอายุหรือไม่สามารถตอบกลับได้!", ephemeral=True)
     except Exception as e:
         await ctx.followup.send(f"⚠️ เกิดข้อผิดพลาด: {str(e)}", ephemeral=True)
         
