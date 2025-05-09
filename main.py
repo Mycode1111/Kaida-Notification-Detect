@@ -140,7 +140,7 @@ async def on_message(message):
 
 # -------------------- Admin Commands -------------------- #
 
-@bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง") 
+@bot.tree.command(name="clear_all", description="ลบข้อความทั้งหมดในช่อง")
 async def clear_all(ctx: discord.Interaction):
     if ctx.user.id not in ADMIN_USERS:
         await ctx.response.send_message("❌ คุณไม่มีสิทธิ์ใช้คำสั่งนี้!", ephemeral=True)
@@ -159,6 +159,7 @@ async def clear_all(ctx: discord.Interaction):
         await ctx.response.send_message("❌ บอทไม่มีสิทธิ์จัดการข้อความในช่องนี้", ephemeral=True)
         return
 
+    # เตรียม interaction
     await ctx.response.defer(ephemeral=True)
 
     try:
@@ -167,14 +168,15 @@ async def clear_all(ctx: discord.Interaction):
             deleted = await channel.purge(limit=100)
             count = len(deleted)
             deleted_total += count
-            if count == 0:
-                break
-            await asyncio.sleep(1)
 
+            if count < 100:
+                break  # ถ้าเจอน้อยกว่า 100 แสดงว่าไม่มีเพิ่มเติมแล้ว
+
+        # ส่ง followup กลับเมื่อเสร็จ
         await ctx.followup.send(f"✅ ลบข้อความทั้งหมด {deleted_total} ข้อความแล้ว", ephemeral=True)
+
     except Exception as e:
         await ctx.followup.send(f"⚠️ ไม่สามารถลบข้อความได้: {str(e)}", ephemeral=True)
-
 
 @bot.tree.command(name="clear", description="ลบข้อความตามจำนวนที่เลือก")
 @app_commands.describe(amount="จำนวนข้อความ (1-100)")
