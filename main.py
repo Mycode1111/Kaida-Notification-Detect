@@ -159,8 +159,8 @@ async def clear_all(ctx: discord.Interaction):
         await ctx.response.send_message("❌ บอทไม่มีสิทธิ์จัดการข้อความในช่องนี้", ephemeral=True)
         return
 
-    # ตอบก่อนแบบ ephemeral ให้ interaction ไม่ timeout
-    await ctx.response.send_message("⏳ กำลังลบข้อความทั้งหมด...", ephemeral=True)
+    # ✅ Defer interaction ทันที เพื่อกัน timeout (ไม่มี timeout จะไม่เจอ 404)
+    await ctx.response.defer(ephemeral=True)
 
     try:
         deleted_total = 0
@@ -170,9 +170,9 @@ async def clear_all(ctx: discord.Interaction):
             deleted_total += count
             if count < 100:
                 break
-            await asyncio.sleep(1)  # ป้องกัน rate limit
+            await asyncio.sleep(1)
 
-        # ส่ง followup (แทนการแก้ไขข้อความเดิม ซึ่งอาจโดน purge ไปแล้ว)
+        # ✅ ใช้ followup ตอบกลับหลังจาก purge เสร็จ
         await ctx.followup.send(f"✅ ลบข้อความทั้งหมดแล้ว ({deleted_total} ข้อความ)", ephemeral=True)
 
     except Exception as e:
