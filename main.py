@@ -375,7 +375,7 @@ async def send_donation_embed(channel):
         timestamp=discord.utils.utcnow()
     )
     embed1.set_author(
-        name="ทดสอบระบบให้ส่งสอง Embed", 
+        name="ระบบแจ้งเตือนอัตโนมัติ", 
         icon_url="https://cdn.discordapp.com/attachments/1038838432434229328/1362069141296779394/Kaida_logo.png"
     )
     embed1.add_field(name="ส่งหลักฐานได้ที่นี่", value="[Click](https://discord.com/channels/1359152679284375752/1359202427638906960)", inline=True)
