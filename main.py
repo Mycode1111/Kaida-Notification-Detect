@@ -179,13 +179,10 @@ async def clear_all(ctx: discord.Interaction):
         await ctx.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
         return
     
-    # ใช้ defer เพื่อบอก Discord ว่าจะใช้เวลาสักครู่ในการทำคำสั่งนี้
-    await ctx.response.defer()
-
-    # ลบข้อความทั้งหมดในช่องแชท
+    # ลบข้อความทั้งหมด
     deleted_messages = await ctx.channel.purge()
 
-    # ใช้ followup เพื่อส่งข้อความหลังจากตอบกลับการโต้ตอบแล้ว
+    # ใช้ followup.send แทน response.send_message
     await ctx.followup.send(f"✅ Deleted all {len(deleted_messages)} messages.", ephemeral=True)
 
 @bot.tree.command(name="clear_user", description="ลบข้อความทั้งหมดจากผู้ใช้")
